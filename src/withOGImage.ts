@@ -59,8 +59,8 @@ function withOGImage<Strategy extends StrategyOption = 'query', StrategyDetails 
     // Lauch puppeteer and get a screenshot
     if (isProductionLikeMode || !inspectHtml) {
       const type = IMAGE_TYPE.includes(params?.type) ? params.type : imageOptions.type
-      const q = Number(params?.quality)
-      const quality = q && !isNaN(q) && q > 0 && q <= 1 ? q : imageOptions.quality
+      const q = parseInt(params?.quality)
+      const quality = q && !isNaN(q) && q > 0 && q <= 100 ? q : imageOptions.quality
       const { page, browser } = await getBrowserPage({ width, height })
       response.setHeader('Content-Type', type ? `image/${type}` : 'image/png')
       response.setHeader('Cache-Control', cacheControl)
