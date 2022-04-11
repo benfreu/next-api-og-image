@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import deepMerge from 'deepmerge'
 import validateStrategy from './validateStrategy'
 import { stringifyObjectProps, getBrowserPage } from './utils'
-
 import type { StrategyOption, NextApiOgImageConfig, StrategyAwareParams } from './types'
+import { IMAGE_TYPE } from './types'
 
 const envMode = process.env.NODE_ENV
 const isProductionLikeMode = envMode !== 'development'
@@ -26,16 +26,15 @@ const defaultOptions = {
 function withOGImage<Strategy extends StrategyOption = 'query', StrategyDetails extends string | object = string>(
   options: NextApiOgImageConfig<Strategy, StrategyDetails>,
 ) {
+  const imageOptions = deepMerge(defaultOptions, options) as NextApiOgImageConfig<Strategy, StrategyDetails>
   const {
     template: { html: htmlTemplate, react: reactTemplate },
     cacheControl,
     strategy,
-    type,
     width,
     height,
-    quality,
     dev: { inspectHtml, errorsInResponse },
-  } = deepMerge(defaultOptions, options) as NextApiOgImageConfig<Strategy, StrategyDetails>
+  } = imageOptions
 
   if (htmlTemplate && reactTemplate) {
     throw new Error('Ambigious template provided. You must provide either `html` or `react` template.')
@@ -59,6 +58,9 @@ function withOGImage<Strategy extends StrategyOption = 'query', StrategyDetails 
 
     // Lauch puppeteer and get a screenshot
     if (isProductionLikeMode || !inspectHtml) {
+      const type = IMAGE_TYPE.includes(params?.type) ? params.type : imageOptions.type
+      const q = Number(params?.quality)
+      const quality = q && !isNaN(q) && q > 0 && q <= 1 ? q : imageOptions.quality
       const { page, browser } = await getBrowserPage({ width, height })
       response.setHeader('Content-Type', type ? `image/${type}` : 'image/png')
       response.setHeader('Cache-Control', cacheControl)

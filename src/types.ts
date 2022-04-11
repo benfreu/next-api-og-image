@@ -4,7 +4,8 @@ import type { RequireExactlyOne } from 'type-fest'
 export const STRATEGY_OPTIONS = ['body', 'query'] as const
 export type StrategyOption = typeof STRATEGY_OPTIONS[number]
 
-export type ImageType = 'png' | 'jpeg' | 'webp'
+export const IMAGE_TYPE = ['png', 'jpeg', 'webp'] as const
+export type ImageType = typeof IMAGE_TYPE[number]
 
 export type StrategyAwareParams<T extends StrategyOption = 'query', StrategyDetails extends string | object = string> = T extends 'body'
   ? StrategyDetails
