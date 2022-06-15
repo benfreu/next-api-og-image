@@ -8,7 +8,7 @@ export const getBrowserPage = async (viewPort?: Viewport) => {
   const browser = await chromium.puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
+    executablePath: 'google-chrome-stable',
     headless: chromium.headless,
     ignoreHTTPSErrors: true,
   })
